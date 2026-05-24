@@ -97,16 +97,53 @@ bool is_kaibun(ll x) {
 }
 
 int main() {
-    ll n, t; cin >> n >> t;
-    vec<ll> score(n);
-    map<ll, ll> mp;
-    mp[0] = n;
-    rep(i, t) {
-        ll a, b; cin >> a >> b; a--;
-        mp[score[a]]--;
-        if(mp[score[a]] == 0) mp.erase(score[a]);
-        score[a] += b;
-        mp[score[a]]++;
-        cout << mp.size() << endl;
+    ll n, q; cin >> n >> q;
+
+    map<ll, ll> card;
+    // rootにいるときは山番号の負の数
+    rep(i, n) card[i+1] = (i+1) * -1;
+
+    // カードの場所
+    rep(i, q) {
+        ll c, p; cin >> c >> p;
+        card[c] = p;
     }
+
+    // 場所でソート
+    vec<pair<ll, ll>> pos;
+    for(map<ll, ll>::iterator it = card.begin(); it != card.end(); it++) {
+        pos.push_back(MP(it->S, it->F));
+    }
+    SORT(pos);
+
+    // debug print
+    cout << "# card" << endl;
+    rep(i, pos.size()) {
+        cout << pos[i].F << "," << pos[i].S << " ";
+    }
+    cout << endl;
+    cout << "##" << endl;
+
+    cout << card[2] << endl;
+
+    // 山ごとにカードの枚数を数える
+    vec<ll> cnt(n);
+    ll p = 0;
+    for(ll i = n; i > 0; i--) {
+        // 山にカードないならスキップ
+        if(pos[p].F * -1 != i) continue;
+        p++;
+        
+        // 山にカードがある時
+        cout << "山" << i << "にカード: " << card[i]  << "がある" << endl;
+        ll tgt = i;
+        while(true) {
+            cnt[i-1]++;
+            if(!card.count(tgt))break;
+            tgt = card[tgt];
+        }
+    }
+
+    vout(cnt);
+
 } 
